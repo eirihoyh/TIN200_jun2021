@@ -6,4 +6,10 @@ Created on Thu Jun  3 10:23:08 2021
 """
 import streamlit as st 
 
-st.write(""" # Overskrift""")
+st.write(""" # Nettside for å automatisere låneprosessen""")
+
+# her må jeg laste inn datae bruke det vi gjorde i går 
+
+
+
+st.sidebar.header("Input verdier")
