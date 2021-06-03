@@ -31,7 +31,7 @@ from sklearn.model_selection import train_test_split
 st.write(""" # Nettside for å automatisere låneprosessen""")
 
 train = pd.read_csv("data/train.csv", index_col=0)
-test = pd.read_csv("data/test.csv", index_col=0)  # does not contain targets
+testt = pd.read_csv("data/test.csv", index_col=0)  # does not contain targets
 
 
 st.sidebar.header("Input verdier")
@@ -67,23 +67,29 @@ def verdier_fra_bruker():
     featurs = pd.DataFrame(data, index = [0])
     return featurs 
 
-input_data = verdier_fra_bruker()
-st.write("Input verdier")
-st.table(input_data)
+test = verdier_fra_bruker()
+st.write(test)
+test = testt.iloc[1]
+st.write(test)
 st.write("--")
 
 #Gender
 train_no_gender = train.copy().drop(columns="Gender")
 
+print(test)
 test_no_gedner = test.copy().drop(columns="Gender")
+print(test_no_gedner)
+
 
 # Married
 train_no_nan_married = train_no_gender.copy().dropna(axis=0, subset=["Married"])
 train_no_nan_married = pd.get_dummies(train_no_nan_married, columns=["Married"], drop_first=True)
 
-test_no_nan_married = test_no_gedner.copy().dropna(axis=0, subset=["Married"])
-test_no_nan_married = pd.get_dummies(test_no_nan_married, columns=["Married"], drop_first=True)
 
+test_no_nan_married = test_no_gedner.copy().dropna(axis=0)
+print(test_no_nan_married)
+#test_no_nan_married = pd.get_dummies(test_no_nan_married, columns=["Married"], drop_first=True)
+print(test_no_nan_married)
 
 # Dependents
 train_dependent_only_int = train_no_nan_married.copy().replace("3+", 3)
@@ -95,14 +101,16 @@ median = np.nanmedian(train_dependent_only_int.Dependents)
 train_dependents_no_nan["Missing_Dependents"] = [int(x) for x in train_dependent_only_int.Dependents.isnull().values]
 train_dependents_no_nan.Dependents = train_dependent_only_int.copy().Dependents.fillna(median)
 
+
+
 test_dependent_only_int = test_no_nan_married.copy().replace("3+", 3)
 for number in range(0, 3):
     test_dependent_only_int = test_dependent_only_int.replace(f"{number}", number)
 
 test_dependents_no_nan = test_dependent_only_int.copy()
 median = np.nanmedian(test_dependent_only_int.Dependents)
-test_dependents_no_nan["Missing_Dependents"] = [int(x) for x in test_dependent_only_int.Dependents.isnull().values]
-test_dependents_no_nan.Dependents = test_dependent_only_int.copy().Dependents.fillna(median)
+#test_dependents_no_nan["Missing_Dependents"] = [int(x) for x in test_dependent_only_int.Dependents.isnull().values]
+#test_dependents_no_nan.Dependents = test_dependent_only_int.copy().Dependents.fillna(median)
 
 # Education
 train_education_dummies = pd.get_dummies(train_dependents_no_nan.copy(), columns=["Education"], drop_first=True)
@@ -119,6 +127,7 @@ test_self_employed_encoded = test_education_dummies.copy()
 train_self_employed_encoded["Missing_Self_Employed"] = missing_ind.fit_transform(train_self_employed_encoded.Self_Employed.values.reshape(-1, 1))
 train_self_employed_encoded["Missing_Self_Employed"] = train_self_employed_encoded["Missing_Self_Employed"].replace([True, False], [1, 0])
 train_self_employed_encoded.Self_Employed = train_self_employed_encoded.Self_Employed.replace([np.nan, "No", "Yes"], [0, 0, 1]) 
+
 
 test_self_employed_encoded["Missing_Self_Employed"] = missing_ind.fit_transform(test_self_employed_encoded.Self_Employed.values.reshape(-1, 1))
 test_self_employed_encoded["Missing_Self_Employed"] = test_self_employed_encoded["Missing_Self_Employed"].replace([True, False], [1, 0])
@@ -173,18 +182,34 @@ X
 
 test_LoanAmount_itterative_imputer = test_property_area_n_target.copy()
 
-xx = test_LoanAmount_itterative_imputer.iloc[:, :]
+X_pred = test_LoanAmount_itterative_imputer.iloc[:, :]
 
 imp_mean = IterativeImputer(random_state=0)
-xx = imp_mean.fit_transform(xx)
+X_pred = imp_mean.fit_transform(X_pred)
 
-xx = pd.DataFrame(xx, columns=test_LoanAmount_itterative_imputer.iloc[:, :].columns)
+X_pred = pd.DataFrame(X_pred, columns=test_LoanAmount_itterative_imputer.iloc[:, :].columns)
 
-xx 
-
-
+X_pred
 
 
+
+
+#Test train split 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=123)
+
+
+pipe_lr = make_pipeline(
+    XGBClassifier(booster="gbtree", learning_rate=0.05, max_depth=5, n_estimators=100, min_child_weight=4, nthread=8, subsample=0.5)
+)
+
+pipe_lr.fit(X_train, y_train)
+
+y_train_pred = pipe_lr.predict(X_train)
+y_test_pred = pipe_lr.predict(X_test)
+prediksjon = pipe_lr.predict(X_pred)
+
+st.header("Prediksjon")
+st.write("Basert på ødine tall:%s " %prediksjon)
 
 
 
