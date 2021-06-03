@@ -6,33 +6,19 @@ Created on Thu Jun  3 10:23:08 2021
 """
 import streamlit as st 
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import xgboost as xgb
 
-from sklearn.metrics import confusion_matrix
+
 from sklearn.metrics import accuracy_score
 from xgboost import XGBClassifier
-from sklearn.impute import MissingIndicator
-from sklearn.impute import SimpleImputer
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
-from sklearn.cross_decomposition import PLSRegression
 from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import validation_curve
-from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
-from xgboost import XGBRegressor
-from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 
 st.write(""" # Nettside for å automatisere låneprosessen""")
 
 train = pd.read_csv("data/train.csv", index_col=0)
-testt = pd.read_csv("data/test.csv", index_col=0)  # does not contain targets
-
 
 st.sidebar.header("Input verdier")
 
@@ -108,6 +94,8 @@ y_train_pred = pipe_lr.predict(X_train)
 y_test_pred = pipe_lr.predict(X_test)
 prediksjon = pipe_lr.predict(pred_user)
 
+
+st.write(prediksjon)
 st.write("Basert på dette får du %s " %prediksjon)
 
 
