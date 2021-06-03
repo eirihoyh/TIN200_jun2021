@@ -149,10 +149,23 @@ st.sidebar.header("Input verdier")
 
 
 
-
 def verdier_fra_bruker():
+    Gender = st.sidebar.selectbox("Gender", ["Male", "Female"])
+    Married = 1
+    Dependents = st.sidebar.slider("Dependents",0,10)
+    Education =1 
+    Self_Employed =1 
+    ApplicantIncome =1 
     CoapplicantIncome = st.sidebar.slider("CoapplicantIncome",float(train.CoapplicantIncome.min()),float(train.CoapplicantIncome.max()),float(train.CoapplicantIncome.mean()))
-    data = {"CoapplicantIncome" : CoapplicantIncome}
+    Loan_Amount = 1
+    Loan_Amount_Term =1 
+    Credit_History = 1
+    Property_Area = 1
+    
+    
+    data = {"CoapplicantIncome" : CoapplicantIncome,
+            "Dependents": Dependents,
+            "Gender" : Gender}
     featurs = pd.DataFrame(data, index = [0])
     return featurs 
 
