@@ -145,16 +145,50 @@ xx = pd.DataFrame(xx, columns=test_LoanAmount_itterative_imputer.iloc[:, :].colu
 
 xx 
 
-
-
-
-
-
-
-
-
-
-
-
-
 st.sidebar.header("Input verdier")
+
+
+
+
+def verdier_fra_bruker():
+    CoapplicantIncome = st.sidebar.slider("CoapplicantIncome",float(train.CoapplicantIncome.min()),float(train.CoapplicantIncome.max()),float(train.CoapplicantIncome.mean()))
+    data = {"CoapplicantIncome" : CoapplicantIncome}
+    featurs = pd.DataFrame(data, index = [0])
+    return featurs 
+
+input_data = verdier_fra_bruker()
+st.write("input verdier")
+st.table(input_data)
+st.write("--")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
