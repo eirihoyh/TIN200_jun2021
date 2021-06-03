@@ -30,10 +30,47 @@ from sklearn.model_selection import train_test_split
 
 st.write(""" # Nettside for å automatisere låneprosessen""")
 
-# her må jeg laste inn datae bruke det vi gjorde i går 
-
 train = pd.read_csv("data/train.csv", index_col=0)
 test = pd.read_csv("data/test.csv", index_col=0)  # does not contain targets
+
+
+st.sidebar.header("Input verdier")
+
+
+def verdier_fra_bruker():
+    Gender = st.sidebar.selectbox("Gender", ["Male", "Female"])
+    Married = st.sidebar.selectbox("Married?", ["Yes", "No"])
+    Dependents = st.sidebar.slider("Dependents",0,10)
+    Education = st.sidebar.selectbox("Education", ["Graduate", "Not Graduate"])
+    Self_Employed = st.sidebar.selectbox("Self Employed", ["Yes", "No"])
+    ApplicantIncome = st.sidebar.slider("ApplicantIncome",float(train.ApplicantIncome.min()),float(train.ApplicantIncome.max()),float(train.ApplicantIncome.mean()))
+    CoapplicantIncome = st.sidebar.slider("CoapplicantIncome",float(train.CoapplicantIncome.min()),float(train.CoapplicantIncome.max()),float(train.CoapplicantIncome.mean()))
+    LoanAmount = st.sidebar.slider("Loan_Amount",float(train.LoanAmount.min()),float(train.LoanAmount.max()),float(train.LoanAmount.mean()))
+    Loan_Amount_Term = st.sidebar.slider("Loan_Amount_Term",float(train.Loan_Amount_Term.min()),float(train.Loan_Amount_Term.max()),float(train.Loan_Amount_Term.mean()))
+    Credit_History = st.sidebar.slider("Credit_History",0,1)
+    Property_Area = st.sidebar.selectbox("Property_Area", ["Urban", "Rural"])
+    
+    
+    data = {
+            "Dependents": Dependents,
+            "Gender" : Gender,
+            "Married":Married,
+            "Education": Education,
+            "Self_Employed" : Self_Employed,
+            "ApplicantIncome": ApplicantIncome,
+            "CoapplicantIncome" : CoapplicantIncome,
+            "Loan_Amount": LoanAmount,
+            "Loan_Amount_Term": Loan_Amount_Term,
+            "Credit_History" : Credit_History,
+            "Property_Area" : Property_Area   
+            }
+    featurs = pd.DataFrame(data, index = [0])
+    return featurs 
+
+input_data = verdier_fra_bruker()
+st.write("Input verdier")
+st.table(input_data)
+st.write("--")
 
 #Gender
 train_no_gender = train.copy().drop(columns="Gender")
@@ -144,37 +181,6 @@ xx = imp_mean.fit_transform(xx)
 xx = pd.DataFrame(xx, columns=test_LoanAmount_itterative_imputer.iloc[:, :].columns)
 
 xx 
-
-st.sidebar.header("Input verdier")
-
-
-
-def verdier_fra_bruker():
-    Gender = st.sidebar.selectbox("Gender", ["Male", "Female"])
-    Married = 1
-    Dependents = st.sidebar.slider("Dependents",0,10)
-    Education =1 
-    Self_Employed =1 
-    ApplicantIncome =1 
-    CoapplicantIncome = st.sidebar.slider("CoapplicantIncome",float(train.CoapplicantIncome.min()),float(train.CoapplicantIncome.max()),float(train.CoapplicantIncome.mean()))
-    Loan_Amount = 1
-    Loan_Amount_Term =1 
-    Credit_History = 1
-    Property_Area = 1
-    
-    
-    data = {"CoapplicantIncome" : CoapplicantIncome,
-            "Dependents": Dependents,
-            "Gender" : Gender}
-    featurs = pd.DataFrame(data, index = [0])
-    return featurs 
-
-input_data = verdier_fra_bruker()
-st.write("input verdier")
-st.table(input_data)
-st.write("--")
-
-
 
 
 
