@@ -7,6 +7,7 @@ Created on Thu Jun  3 10:23:08 2021
 import streamlit as st 
 import pandas as pd
 import xgboost as xgb
+import os
 
 
 from sklearn.metrics import accuracy_score
@@ -16,11 +17,22 @@ from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
+st.set_page_config(layout="wide")
 st.write(""" # Nettside for å automatisere låneprosessen""")
 
 train = pd.read_csv("data/train.csv", index_col=0)
 
 st.sidebar.header("Input verdier")
+
+
+def file_selector(folder_path='.'):
+    filenames = os.listdir(folder_path)
+    selected_filename = st.selectbox('Velg filen med dine oplysniger', filenames)
+    return os.path.join(folder_path, selected_filename)
+
+filename = file_selector()
+st.write('Du valgte denne filen `%s`' % filename)
+st.write("Basert på dataen din vil du få lån")
 
 
 def verdier_fra_bruker():
@@ -54,8 +66,19 @@ def verdier_fra_bruker():
     return featurs 
 
 pred_user = verdier_fra_bruker()
-st.write(pred_user)
-st.write("--")
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+#st.dataframe(data=pred_user, width=1200, height=768)
+#st.dataframe(pred_user)
+st.write(""" ## Se om du fortsatt vil få lån dersom du endrer noen parametere""")
+st.write(""" ### Dine nye parametere""")
+st.table(pred_user)
+#st.write(pred_user)
+
 
 train = train.dropna()
 train["Dependents"].replace({"0":0 , "1": 1,"2":2,"3":3,"3+":3, "4" : 4 }, inplace = True)
@@ -95,8 +118,11 @@ y_test_pred = pipe_lr.predict(X_test)
 prediksjon = pipe_lr.predict(pred_user)
 
 
-st.write(prediksjon)
-st.write("Basert på dette får du %s " %prediksjon)
+if prediksjon == 0: 
+    st.write("Basert på dette får du lån  ")
+elif prediksjon> 0:
+    st.write("Basert på dette får du ikke lån  ")
+    
 
 
 
